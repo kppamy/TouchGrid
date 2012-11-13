@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -21,13 +22,14 @@ public class TouchGridView extends SurfaceView implements SurfaceHolder.Callback
 	private static final String TAG = "TouchGrid:View";
 	private static final int MAX_TOUCHPOINTS = 10;
 	private static final String START_TEXT = "Touch To Start Test";
+	private static final int INVALID_TOUCH_ID = -1;
 	
 	private Paint textPaint = new Paint();
 	private Paint touchPaints[] = new Paint[MAX_TOUCHPOINTS];
 	private int colors[] = new int[MAX_TOUCHPOINTS];
 	
 	private int width, height;
-	private int offset = 10; //!< The size of block
+	private int offset = 20; //!< The size of block
 	private float scale = 1.0f;
 	private int colSize, rowSize;  //!< The w*h size always in portrait perspective 
 	
@@ -53,7 +55,7 @@ public class TouchGridView extends SurfaceView implements SurfaceHolder.Callback
 		
 		public BlockData(int col, int row) {
 			loc.set(col, row);
-			touchId = 0;
+			touchId = INVALID_TOUCH_ID;
 			pos.set(0, 0);			
 			pressure = 0.0f;
 			size = 0;
@@ -77,6 +79,32 @@ public class TouchGridView extends SurfaceView implements SurfaceHolder.Callback
 		if (pointerCount > MAX_TOUCHPOINTS) {
 			pointerCount = MAX_TOUCHPOINTS;
 		}
+		
+		for (int i = 0; i < pointerCount; i++) {
+			int id = event.getPointerId(i);
+			int x = (int) event.getX(i);
+			int y = (int) event.getY(i);
+			// TODO: Need to transform the coordinate based on the orientation
+			
+			// detect which block 
+			int col = x/offset;
+			int row = y/offset;
+			if (row < rowSize && col < colSize) {
+				BlockData b = gridMatrix.get(row).get(col);
+				if (b != null)
+				{
+					b.pos.x = x; b.pos.y = y;
+					b.touchId = id;
+					b.pressure = event.getPressure(i);
+					b.size = (int)event.getSize(i);
+				}			
+			}
+			else {
+				Log.d(TAG, "(" + x + ", " + y + " -> " + "(" + col + ", " + row + ")");
+			}
+				
+		}
+		
 		Canvas c = getHolder().lockCanvas();
 		if (c != null) {
 			
@@ -146,6 +174,7 @@ public class TouchGridView extends SurfaceView implements SurfaceHolder.Callback
 		for (int i = 0; i < MAX_TOUCHPOINTS; i++) {
 			touchPaints[i] = new Paint();
 			touchPaints[i].setColor(colors[i]);
+			touchPaints[i].setStrokeWidth(0);
 		}		
 		
 		// Initialize the grid matrix in accordance to w and h (assume landscape mode)
@@ -177,22 +206,24 @@ public class TouchGridView extends SurfaceView implements SurfaceHolder.Callback
 		if (c != null) {			
 			int rowLen = rowSize * offset;
 			int colLen = colSize * offset;
-			
+			/*
 			// Draw horizontal lines
 			for (int y = offset; y < rowLen; y += offset)				
 				c.drawLine(0, y, colLen, y, paint);
 			// Draw vertical lines
 			for (int x = offset; x < colLen; x += offset)
-				c.drawLine(x, 0, x, rowLen, paint);
+				c.drawLine(x, 0, x, rowLen, paint);*/
 			
+			// TODO: This is making the UI unresponsive and must be moved to a thread
 			if (gridMatrix != null) {
 				// Draw block							
 				for (int ri = 0; ri < gridMatrix.size(); ri++) {					
 					for (int ci = 0; ci < gridMatrix.get(ri).size(); ci++) {
 						BlockData b = gridMatrix.get(ri).get(ci);
 						//Log.d(TAG, "Block " + b.loc.x + ", " + b.loc.y);
-						if (b.touchId != 0) {
-							c.drawCircle((float)b.pos.x, (float)b.pos.y, (float)b.size, touchPaints[b.touchId]);
+						if (b.touchId != INVALID_TOUCH_ID) {
+							// c.drawCircle((float)b.pos.x, (float)b.pos.y, (float)b.size, touchPaints[b.touchId]);							
+							c.drawRect(ci*offset, ri*offset, (ci+1)*offset, (ri+1)*offset, touchPaints[b.touchId]);
 						}
 					}
 				}					
