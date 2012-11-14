@@ -24,4 +24,6 @@ Pending issue:
 Reference:
 http://www.rbgrn.net/content/367-source-code-to-multitouch-visible-test
 http://stackoverflow.com/questions/10956583/android-draw-using-surfaceview-and-thread
+<Workaround for screen flicker>
+http://android-coding.blogspot.sg/2012/01/flickering-problems-due-to-double.html
 
