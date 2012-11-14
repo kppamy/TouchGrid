@@ -5,8 +5,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -33,7 +35,12 @@ public class TouchGridView extends SurfaceView implements SurfaceHolder.Callback
 	private int width, height;
 	private int offset = 20; //!< The size of block
 	private float scale = 1.0f;
-	private int colSize, rowSize;  //!< The w*h size always in portrait perspective 
+	private int colSize, rowSize;  //!< The w*h size always in portrait perspective
+	
+	private int myCanvas_w, myCanvas_h;
+	private Bitmap myCanvasBitmap = null;
+	private Canvas myCanvas = null;
+	private Matrix identityMatrix;	
 	
 	//! A 2d array holding the status of block
 	/**
@@ -82,7 +89,8 @@ public class TouchGridView extends SurfaceView implements SurfaceHolder.Callback
 	protected void onDraw(Canvas canvas) {
 
 	    // TODO: Update whatever change to the draw parameters
-	    drawGrid(canvas, textPaint);
+		// Draw my own's canvasbitmap to the surface's canvas
+		canvas.drawBitmap(myCanvasBitmap, identityMatrix, null);
 	}
 	
 	@Override
@@ -92,47 +100,39 @@ public class TouchGridView extends SurfaceView implements SurfaceHolder.Callback
 			pointerCount = MAX_TOUCHPOINTS;
 		}
 		
-		Canvas c = null;
-		try {
-			c = getHolder().lockCanvas();
-			for (int i = 0; i < pointerCount; i++) {
-				int id = event.getPointerId(i);
-				int x = (int) event.getX(i);
-				int y = (int) event.getY(i);
-				// TODO: Need to transform the coordinate based on the orientation
-				
-				// detect which block 
-				int col = x/offset;
-				int row = y/offset;
-				if (row < rowSize && col < colSize) {
-					BlockData b = gridMatrix.get(row).get(col);
-					if (b != null)
-					{
-						b.pos.x = x; b.pos.y = y;
-						if (b.touchId != id) {
-							b.touchId = id;
-							b.bChanged = true;
-						}
-						
-						b.pressure = event.getPressure(i);
-						b.size = (int)event.getSize(i);
-						// Draw just the block					
-						if (c != null && b.bChanged) {
-							// Draw only changed block to avoid flickering
-							c.drawRect(col*offset, row*offset, (col+1)*offset, (row+1)*offset, touchPaints[b.touchId]);
-							b.bChanged = false; 
-						}					
-					}			
-				}
-				else {
-					Log.d(TAG, "(" + x + ", " + y + ") -> " + "(" + col + ", " + row + ")");
-				}
+		for (int i = 0; i < pointerCount; i++) {
+			int id = event.getPointerId(i);
+			int x = (int) event.getX(i);
+			int y = (int) event.getY(i);
+			// TODO: Need to transform the coordinate based on the orientation
+			
+			// detect which block 
+			int col = x/offset;
+			int row = y/offset;
+			if (row < rowSize && col < colSize) {
+				BlockData b = gridMatrix.get(row).get(col);
+				if (b != null)
+				{
+					b.pos.x = x; b.pos.y = y;
+					if (b.touchId != id) {
+						b.touchId = id;
+						b.bChanged = true;
+					}
 					
-			}			
-		} finally {
-			if (c != null)
-				getHolder().unlockCanvasAndPost(c);
-		}	
+					b.pressure = event.getPressure(i);
+					b.size = (int)event.getSize(i);
+					// Draw just the block to private canvas					
+					if (myCanvas != null && b.bChanged) {
+						// Draw only changed block to avoid flickering
+						myCanvas.drawRect(col*offset, row*offset, (col+1)*offset, (row+1)*offset, touchPaints[b.touchId]);
+						b.bChanged = false; 
+					}					
+				}			
+			}
+			else {
+				Log.d(TAG, "(" + x + ", " + y + ") -> " + "(" + col + ", " + row + ")");
+			}				
+		}			
 		
 		return true;
 	}	
@@ -193,11 +193,7 @@ public class TouchGridView extends SurfaceView implements SurfaceHolder.Callback
 		}
 		
 		// Draw the grid
-		Canvas c = getHolder().lockCanvas();
-		if (c != null) {
-			drawGrid(c, textPaint);
-			getHolder().unlockCanvasAndPost(c);
-		}
+		drawGrid(myCanvas, textPaint);
 	}	
 	
 	private void drawGrid(Canvas c, Paint paint) {				
@@ -223,17 +219,24 @@ public class TouchGridView extends SurfaceView implements SurfaceHolder.Callback
 
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
-		// TODO Auto-generated method stub
-		/*  
-		 drawThread.setRunnable(true);
-	    drawThread.start();	*/	
+		// TODO Auto-generated method stub	
+		myCanvas_w = getWidth();
+		myCanvas_h = getHeight();
+		myCanvasBitmap = Bitmap.createBitmap(myCanvas_w, myCanvas_h, Bitmap.Config.ARGB_8888);
+		myCanvas = new Canvas();
+		myCanvas.setBitmap(myCanvasBitmap);
+		 
+		identityMatrix = new Matrix();		
+		
+		drawThread.setRunnable(true);
+	    drawThread.start();		
 	}
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		// TODO Auto-generated method stub
 		
-	    /*boolean retry = true;
+	    boolean retry = true;
 	    drawThread.setRunnable(false);
 
 	    while(retry) {
@@ -245,6 +248,6 @@ public class TouchGridView extends SurfaceView implements SurfaceHolder.Callback
 	        }
 	        break;
 	    }
-	    drawThread = null;*/
+	    drawThread = null;
 	}	
 }

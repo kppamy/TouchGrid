@@ -26,7 +26,7 @@ public class GridThread extends Thread {
 	        try {
 	            canvas = sh.lockCanvas(null);
 	            synchronized(sh) {
-	                //view.onDraw(canvas);
+	                view.onDraw(canvas);
 	            }
 	        } finally {
 	            if(canvas != null) {
