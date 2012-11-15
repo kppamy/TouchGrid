@@ -15,7 +15,8 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main" 
             android:theme="@android:style/Theme.NoTitleBar" 
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

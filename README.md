@@ -20,14 +20,15 @@ Additional:
 Update 2012/11/13:
 Pending issue:
 - Crash on orientation change. Need to add matrix transformation.
+  * Avoided by supporting only portrait screen orientation
 
 Resolved:
 - drawing is flickering while touch
-  > Commonly known issue with SurfaceView. Solved it based on ref [3]
-
+  * Commonly known issue with SurfaceView. Solved it based on ref [3]
+  
 Reference:
-[1] http://www.rbgrn.net/content/367-source-code-to-multitouch-visible-test
-[2] http://stackoverflow.com/questions/10956583/android-draw-using-surfaceview-and-thread
-[3] <Workaround for screen flicker>
+- [1] http://www.rbgrn.net/content/367-source-code-to-multitouch-visible-test
+- [2] http://stackoverflow.com/questions/10956583/android-draw-using-surfaceview-and-thread
+- [3] <Workaround for screen flicker>
 http://android-coding.blogspot.sg/2012/01/flickering-problems-due-to-double.html
 
