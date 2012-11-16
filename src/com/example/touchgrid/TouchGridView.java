@@ -90,7 +90,14 @@ public class TouchGridView extends SurfaceView implements SurfaceHolder.Callback
 
 	    // TODO: Update whatever change to the draw parameters
 		// Draw my own's canvasbitmap to the surface's canvas
-		canvas.drawBitmap(myCanvasBitmap, identityMatrix, null);
+		synchronized(this) {
+			try {
+				canvas.drawBitmap(myCanvasBitmap, identityMatrix, null);
+			} catch (Exception ex) {
+				Log.d(TAG, "Exception: " + ex.getMessage());				
+			}
+			
+		}
 	}
 	
 	@Override

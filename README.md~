@@ -17,11 +17,13 @@ Additional:
 - Make the grid overlay?
 - Make block size configurable?
 
-Update 2012/11/13:
+Update 2012/11/16:
 Pending issue:
-- Crash on orientation change. Need to add matrix transformation.
 
 Resolved:
+- Crash on orientation change. Need to add matrix transformation.
+  * Avoided by supporting only portrait screen orientation
+
 - drawing is flickering while touch
   * Commonly known issue with SurfaceView. Solved it based on ref [3]
   

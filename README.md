@@ -17,12 +17,16 @@ Additional:
 - Make the grid overlay?
 - Make block size configurable?
 
-Update 2012/11/13:
+Update 2012/11/16:
 Pending issue:
+
+Resolved:
+- Crash on exit
+  * canvas is null when thread still calling ondraw.
+  
 - Crash on orientation change. Need to add matrix transformation.
   * Avoided by supporting only portrait screen orientation
 
-Resolved:
 - drawing is flickering while touch
   * Commonly known issue with SurfaceView. Solved it based on ref [3]
   
