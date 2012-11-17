@@ -1,4 +1,4 @@
-package com.example.touchgrid;
+package com.tempura.touchgrid;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -10,6 +10,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
@@ -179,7 +180,12 @@ public class TouchGridView extends SurfaceView implements SurfaceHolder.Callback
 		for (int i = 0; i < MAX_TOUCHPOINTS; i++) {
 			touchPaints[i] = new Paint();
 			touchPaints[i].setColor(colors[i]);
-			touchPaints[i].setStrokeWidth(0);
+			touchPaints[i].setStrokeWidth(2);
+			touchPaints[i].setAntiAlias(true);
+			touchPaints[i].setDither(true);
+			touchPaints[i].setStyle(Paint.Style.STROKE);
+			touchPaints[i].setStrokeJoin(Paint.Join.ROUND);
+			touchPaints[i].setStrokeCap(Paint.Cap.ROUND);
 		}		
 		
 		// Initialize the grid matrix in accordance to w and h (assume landscape mode)
@@ -234,7 +240,8 @@ public class TouchGridView extends SurfaceView implements SurfaceHolder.Callback
 		myCanvas.setBitmap(myCanvasBitmap);
 		 
 		identityMatrix = new Matrix();		
-		
+		if (drawThread == null) 
+			drawThread = new GridThread(getHolder(), this);
 		drawThread.setRunnable(true);
 	    drawThread.start();		
 	}

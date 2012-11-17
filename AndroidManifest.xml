@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.touchgrid"
+    package="com.tempura.touchgrid"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -10,7 +10,7 @@
     <application
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@android:style/Theme.NoTitleBar" >
+        android:theme="@android:style/Theme.NoTitleBar" android:debuggable="false">
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main" 

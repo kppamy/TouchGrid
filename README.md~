@@ -21,6 +21,9 @@ Update 2012/11/16:
 Pending issue:
 
 Resolved:
+- Crash on exit
+  * canvas is null when thread still calling ondraw.
+  
 - Crash on orientation change. Need to add matrix transformation.
   * Avoided by supporting only portrait screen orientation
 

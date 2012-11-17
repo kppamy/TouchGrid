@@ -1,4 +1,4 @@
-package com.example.touchgrid;
+package com.tempura.touchgrid;
 
 import android.graphics.Canvas;
 import android.view.SurfaceHolder;

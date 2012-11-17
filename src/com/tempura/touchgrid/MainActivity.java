@@ -1,4 +1,6 @@
-package com.example.touchgrid;
+package com.tempura.touchgrid;
+
+import com.example.touchgrid.R;
 
 import android.os.Bundle;
 import android.app.Activity;

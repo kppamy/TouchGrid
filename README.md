@@ -19,6 +19,7 @@ Additional:
 
 Update 2012/11/16:
 Pending issue:
+- State is not saved when coming back from pause 
 
 Resolved:
 - Crash on exit
