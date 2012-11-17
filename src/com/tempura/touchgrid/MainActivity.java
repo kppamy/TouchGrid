@@ -1,7 +1,5 @@
 package com.tempura.touchgrid;
 
-import com.example.touchgrid.R;
-
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
